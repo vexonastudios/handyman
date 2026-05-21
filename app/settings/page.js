@@ -494,6 +494,115 @@ function SettingsContent() {
         </div>
       </div>
 
+      {/* ── DEVELOPER ROADMAP & NEXT STEPS ───────────────────────── */}
+      <div style={{
+        ...card,
+        border: '1px solid rgba(217, 119, 6, 0.25)',
+        background: 'linear-gradient(135deg, var(--bg-card), var(--bg-elevated))',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'var(--accent-glow)',
+          color: 'var(--accent)',
+          fontSize: '10px',
+          fontWeight: 700,
+          padding: '4px 12px',
+          borderBottomLeftRadius: 'var(--radius-md)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}>
+          Roadmap
+        </div>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+          🛠️ Next Steps & Roadmap
+        </h2>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
+          Here are the upcoming features and technical enhancements left to implement.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {[
+            {
+              title: '☁️ Cloudflare R2 Storage',
+              desc: 'Move photos from ephemeral /tmp serverless container to persistent cloud storage so they are guaranteed to exist at publish time.',
+              status: 'Deferred',
+              statusColor: 'var(--text-muted)',
+              statusBg: 'var(--bg-hover)'
+            },
+            {
+              title: '📸 Bulk Photo Upload',
+              desc: 'Allow selecting multiple photos at once, processing and generating AI descriptions sequentially.',
+              status: 'Upcoming',
+              statusColor: 'var(--info)',
+              statusBg: 'var(--info-muted)'
+            },
+            {
+              title: '⚡ "Post Now" Quick Action',
+              desc: 'Add a button on queued posts to skip the scheduler and publish them immediately.',
+              status: 'Upcoming',
+              statusColor: 'var(--info)',
+              statusBg: 'var(--info-muted)'
+            },
+            {
+              title: '🔔 Web Push Notifications',
+              desc: 'Notify users via service worker when a scheduled post successfully publishes to Google Business Profile.',
+              status: 'Upcoming',
+              statusColor: 'var(--info)',
+              statusBg: 'var(--info-muted)'
+            },
+            {
+              title: '🔒 Magic-Byte File Validation',
+              desc: 'Inspect file buffers during upload to ensure only valid, safe image/video data is accepted.',
+              status: 'Upcoming',
+              statusColor: 'var(--info)',
+              statusBg: 'var(--info-muted)'
+            },
+            {
+              title: '🔗 Published Post Links',
+              desc: 'Retrieve and display direct links to active posts on Google from the published logs.',
+              status: 'Upcoming',
+              statusColor: 'var(--info)',
+              statusBg: 'var(--info-muted)'
+            }
+          ].map(item => (
+            <div key={item.title} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: 16,
+              paddingBottom: 12,
+              borderBottom: '1px solid var(--border-subtle)'
+            }}>
+              <div style={{ flex: 1 }}>
+                <h4 style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 3 }}>
+                  {item.title}
+                </h4>
+                <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                  {item.desc}
+                </p>
+              </div>
+              <span style={{
+                fontSize: 10.5,
+                fontWeight: 700,
+                padding: '3px 8px',
+                borderRadius: 6,
+                color: item.statusColor,
+                background: item.statusBg,
+                textTransform: 'uppercase',
+                letterSpacing: '0.03em',
+                flexShrink: 0
+              }}>
+                {item.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* ── HOW IT WORKS ────────────────────────────────────────── */}
       <div style={{
         ...card,
