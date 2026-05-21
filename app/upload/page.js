@@ -7,7 +7,7 @@ export default function UploadPage() {
   const router = useRouter();
   const fileInputRef = useRef(null);
 
-  const [photo, setPhoto] = useState(null); // { file, previewUrl, imagePath }
+  const [photo, setPhoto] = useState(null); // { file, previewUrl, imagePath, base64, mimeType }
   const [description, setDescription] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [step, setStep] = useState('upload'); // upload | describe | queue
@@ -41,26 +41,25 @@ export default function UploadPage() {
     setAlert(null);
 
     try {
-      // Step 1: Upload
+      // Step 1: Upload — server saves to /tmp and returns base64 inline
       const formData = new FormData();
       formData.append('photo', photo.file);
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
       const uploadData = await uploadRes.json();
       if (!uploadData.success) throw new Error(uploadData.error);
 
-      const imagePath = uploadData.imagePath;
-      setPhoto(prev => ({ ...prev, imagePath }));
+      const { imagePath, base64, mimeType } = uploadData;
+      setPhoto(prev => ({ ...prev, imagePath, base64, mimeType }));
 
-      // Step 2: Describe with Gemini (server uses the admin-supplied API key)
+      // Step 2: Describe with Gemini — pass base64 directly (no filesystem re-read)
       setLoadingMsg('Asking Gemini to describe your photo...');
       const descRes = await fetch('/api/describe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imagePath }),
+        body: JSON.stringify({ base64, mimeType, imagePath }),
       });
       const descData = await descRes.json();
       if (!descData.success) throw new Error(descData.error);
-
 
       setDescription(descData.description);
       setStep('queue');

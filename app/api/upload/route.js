@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
-
+import os from 'os';
 
 export async function POST(request) {
   try {
@@ -15,20 +15,28 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadsDir = path.join(process.cwd(), 'uploads');
+    // Use /tmp — the only writable directory in Vercel serverless
+    const uploadsDir = path.join(os.tmpdir(), 'postcraft-uploads');
     await mkdir(uploadsDir, { recursive: true });
 
-    const ext = file.name.split('.').pop() || 'jpg';
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `photo_${Date.now()}.${ext}`;
     const filePath = path.join(uploadsDir, filename);
 
     await writeFile(filePath, buffer);
+
+    // Also return base64 so /api/describe can use it directly
+    // without needing the file to persist (Vercel /tmp is ephemeral)
+    const base64 = buffer.toString('base64');
+    const mimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
 
     return NextResponse.json({
       success: true,
       imagePath: filePath,
       filename,
       size: buffer.length,
+      base64,
+      mimeType,
     });
   } catch (err) {
     console.error('[Upload]', err);
