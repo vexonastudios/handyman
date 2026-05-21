@@ -51,7 +51,7 @@ export default function UploadPage() {
       const imagePath = uploadData.imagePath;
       setPhoto(prev => ({ ...prev, imagePath }));
 
-      // Step 2: Describe with Gemini
+      // Step 2: Describe with Gemini (server uses the admin-supplied API key)
       setLoadingMsg('Asking Gemini to describe your photo...');
       const descRes = await fetch('/api/describe', {
         method: 'POST',
@@ -60,6 +60,7 @@ export default function UploadPage() {
       });
       const descData = await descRes.json();
       if (!descData.success) throw new Error(descData.error);
+
 
       setDescription(descData.description);
       setStep('queue');
@@ -70,6 +71,7 @@ export default function UploadPage() {
       setLoadingMsg('');
     }
   }
+
 
   async function addToQueue() {
     if (!photo?.imagePath || !description.trim()) return;

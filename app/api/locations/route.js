@@ -1,17 +1,24 @@
 import { NextResponse } from 'next/server';
 import { listAccounts, listLocations } from '@/lib/gbp';
-import { getSetting } from '@/lib/db';
 
+// GET /api/locations
+// Accepts: ?account=<accountName> for locations, otherwise returns accounts
+// Requires: x-google-token header (access token from browser localStorage)
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const accountName = searchParams.get('account');
+  const token = request.headers.get('x-google-token');
+
+  if (!token) {
+    return NextResponse.json({ error: 'Not authenticated. Please connect Google account in Settings.' }, { status: 401 });
+  }
 
   try {
     if (accountName) {
-      const locations = await listLocations(accountName);
+      const locations = await listLocations(accountName, token);
       return NextResponse.json({ locations });
     } else {
-      const accounts = await listAccounts();
+      const accounts = await listAccounts(token);
       return NextResponse.json({ accounts });
     }
   } catch (err) {
