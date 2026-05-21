@@ -41,6 +41,14 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-title" content="PostCraft" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#f59e0b" />
+        <script dangerouslySetInnerHTML={{__html: `
+          (function() {
+            try {
+              const theme = localStorage.getItem('postcraft_theme') || 'light';
+              document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) {}
+          })();
+        `}} />
       </head>
       <body>
         <PWAProvider>

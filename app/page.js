@@ -98,7 +98,7 @@ export default function DashboardPage() {
           </div>
 
           {/* CTA */}
-          <div style={{ marginBottom: '28px', display: 'flex', gap: '12px' }}>
+          <div className="cta-container" style={{ marginBottom: '28px', display: 'flex', gap: '12px' }}>
             <Link href="/upload" className="btn btn-primary btn-lg">
               📷 Upload a Photo
             </Link>

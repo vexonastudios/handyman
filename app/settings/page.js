@@ -39,7 +39,7 @@ function StatusBadge({ connected, label }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', gap: 6,
       padding: '5px 14px', borderRadius: 100, fontSize: 12.5, fontWeight: 600,
-      background: connected ? 'var(--success-muted)' : 'rgba(255,255,255,0.06)',
+      background: connected ? 'var(--success-muted)' : 'var(--bg-elevated)',
       color: connected ? 'var(--success)' : 'var(--text-muted)',
       border: `1px solid ${connected ? 'rgba(16,185,129,0.25)' : 'var(--border-subtle)'}`,
     }}>
@@ -70,6 +70,7 @@ function SettingsContent() {
   const [savingToken, setSavingToken] = useState(false);
   const [alert, setAlert] = useState(null);
   const [serverConfig, setServerConfig] = useState({ googleConfigured: false });
+  const [theme, setTheme] = useState('light');
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -78,8 +79,19 @@ function SettingsContent() {
     setSelectedLocation(ls(LS.GBP_LOCATION));
     setSavedLocation(ls(LS.GBP_LOCATION));
     setGoogleConnected(!!(ls(LS.GOOGLE_ACCESS_TOKEN) || ls(LS.GOOGLE_REFRESH_TOKEN)));
+    
+    // Load theme
+    const activeTheme = localStorage.getItem('postcraft_theme') || 'light';
+    setTheme(activeTheme);
+    
     fetch('/api/settings').then(r => r.json()).then(setServerConfig).catch(() => {});
   }, []);
+
+  function updateTheme(newTheme) {
+    setTheme(newTheme);
+    localStorage.setItem('postcraft_theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  }
 
   // Handle OAuth callback — tokens arrive as URL params, save to localStorage
   useEffect(() => {
@@ -454,6 +466,32 @@ function SettingsContent() {
         <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 12 }}>
           ℹ️ The actual post time is controlled by the Vercel Cron job (currently set to 9:00 AM CST). Contact your admin to change the server schedule.
         </p>
+      </div>
+
+      {/* ── APPEARANCE SETTINGS ─────────────────────────────────── */}
+      <div style={card}>
+        <h2 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+          🎨 Appearance Settings
+        </h2>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
+          Customize the layout theme of your PostCraft interface.
+        </p>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button
+            className={`btn ${theme === 'light' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => updateTheme('light')}
+            style={{ flex: 1, padding: '12px' }}
+          >
+            ☀️ Light Mode
+          </button>
+          <button
+            className={`btn ${theme === 'dark' ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={() => updateTheme('dark')}
+            style={{ flex: 1, padding: '12px' }}
+          >
+            🌙 Dark Mode
+          </button>
+        </div>
       </div>
 
       {/* ── HOW IT WORKS ────────────────────────────────────────── */}

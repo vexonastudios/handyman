@@ -199,7 +199,7 @@ export default function UploadPage() {
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '10px' }}>
+                  <div className="cta-container" style={{ display: 'flex', gap: '10px' }}>
                     <button
                       className="btn btn-primary btn-lg"
                       onClick={addToQueue}
