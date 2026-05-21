@@ -2,6 +2,12 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 
+function isVideo(pathStr) {
+  if (!pathStr) return false;
+  const ext = pathStr.split('.').pop().toLowerCase();
+  return ['mp4', 'mov', 'webm', 'ogg', 'mkv', 'm4v'].includes(ext);
+}
+
 export default function QueuePage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -132,11 +138,21 @@ export default function QueuePage() {
                           .map(post => (
                           <tr key={post.id}>
                             <td>
-                              <img
-                                src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
-                                alt=""
-                                className="queue-thumb"
-                              />
+                              {isVideo(post.image_path) ? (
+                                <video
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  className="queue-thumb"
+                                  style={{ objectFit: 'cover', background: 'var(--bg-base)' }}
+                                  muted
+                                  playsInline
+                                />
+                              ) : (
+                                <img
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  alt=""
+                                  className="queue-thumb"
+                                />
+                              )}
                             </td>
                             <td>
                               {editingId === post.id ? (
@@ -207,11 +223,21 @@ export default function QueuePage() {
                         {failed.map(post => (
                           <tr key={post.id}>
                             <td>
-                              <img
-                                src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
-                                alt=""
-                                className="queue-thumb"
-                              />
+                              {isVideo(post.image_path) ? (
+                                <video
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  className="queue-thumb"
+                                  style={{ objectFit: 'cover', background: 'var(--bg-base)' }}
+                                  muted
+                                  playsInline
+                                />
+                              ) : (
+                                <img
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  alt=""
+                                  className="queue-thumb"
+                                />
+                              )}
                             </td>
                             <td>{formatDate(post.scheduled_date)}</td>
                             <td style={{ color: 'var(--danger)', fontSize: 12 }}>{post.error || 'Unknown error'}</td>
@@ -246,11 +272,21 @@ export default function QueuePage() {
                           .map(post => (
                           <tr key={post.id}>
                             <td>
-                              <img
-                                src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
-                                alt=""
-                                className="queue-thumb"
-                              />
+                              {isVideo(post.image_path) ? (
+                                <video
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  className="queue-thumb"
+                                  style={{ objectFit: 'cover', background: 'var(--bg-base)' }}
+                                  muted
+                                  playsInline
+                                />
+                              ) : (
+                                <img
+                                  src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                                  alt=""
+                                  className="queue-thumb"
+                                />
+                              )}
                             </td>
                             <td style={{ color: 'var(--text-secondary)' }}>
                               {post.published_at ? new Date(post.published_at).toLocaleDateString() : formatDate(post.scheduled_date)}

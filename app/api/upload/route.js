@@ -28,7 +28,19 @@ export async function POST(request) {
     // Also return base64 so /api/describe can use it directly
     // without needing the file to persist (Vercel /tmp is ephemeral)
     const base64 = buffer.toString('base64');
-    const mimeType = ext === 'png' ? 'image/png' : ext === 'gif' ? 'image/gif' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    
+    const mimeMap = {
+      png: 'image/png',
+      gif: 'image/gif',
+      webp: 'image/webp',
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      mp4: 'video/mp4',
+      mov: 'video/quicktime',
+      webm: 'video/webm',
+      m4v: 'video/x-m4v',
+    };
+    const mimeType = mimeMap[ext] || 'image/jpeg';
 
     return NextResponse.json({
       success: true,

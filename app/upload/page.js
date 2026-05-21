@@ -138,23 +138,32 @@ export default function UploadPage() {
             >
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 ref={fileInputRef}
                 onChange={handleInputChange}
                 id="photo-input"
                 style={{ display: 'none' }}
               />
               <div className="upload-icon">📷</div>
-              <h3>Drop a photo or tap to select</h3>
-              <p>JPG or PNG · Max 5 MB · Use your phone camera for best results</p>
+              <h3>Drop a photo/video or tap to select</h3>
+              <p>JPG, PNG, MP4, or MOV · Max 15 MB · Use your phone camera for best results</p>
             </div>
           )}
 
-          {/* Step: Photo selected — describe */}
+          {/* Step: Photo/Video selected — describe */}
           {(step === 'describe' || step === 'queue') && photo && (
             <>
-              <div className="photo-preview" style={{ marginBottom: '20px' }}>
-                <img src={photo.previewUrl} alt="Selected job photo" />
+              <div className="photo-preview" style={{ marginBottom: '20px', position: 'relative' }}>
+                {photo.file?.type?.startsWith('video/') || (photo.imagePath && ['mp4', 'mov', 'webm', 'ogg', 'm4v'].includes(photo.imagePath.split('.').pop().toLowerCase())) ? (
+                  <video
+                    src={photo.previewUrl}
+                    controls
+                    playsInline
+                    style={{ width: '100%', maxHeight: '360px', borderRadius: 'var(--radius-lg)', background: 'var(--bg-base)' }}
+                  />
+                ) : (
+                  <img src={photo.previewUrl} alt="Selected job asset" />
+                )}
                 <button className="preview-remove" onClick={reset} title="Remove">✕</button>
               </div>
 
