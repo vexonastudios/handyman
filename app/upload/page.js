@@ -134,14 +134,15 @@ export default function UploadPage() {
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
             >
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
                 ref={fileInputRef}
                 onChange={handleInputChange}
                 id="photo-input"
+                style={{ display: 'none' }}
               />
               <div className="upload-icon">📷</div>
               <h3>Drop a photo or tap to select</h3>
