@@ -202,10 +202,10 @@ export default function UploadPage() {
                       className="form-control"
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      rows={6}
+                      rows={8}
                       placeholder="Gemini-generated description will appear here..."
                       maxLength={CHAR_LIMIT}
-                      style={{ minHeight: 120 }}
+                      style={{ minHeight: 120, maxHeight: '45vh', overflowY: 'auto' }}
                     />
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '11.5px', color: charColor, fontWeight: charCount >= 1200 ? 700 : 400, transition: 'color 0.2s' }}>
