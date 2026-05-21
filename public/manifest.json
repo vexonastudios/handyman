@@ -1,0 +1,48 @@
+{
+  "name": "PostCraft — Handyman GBP Scheduler",
+  "short_name": "PostCraft",
+  "description": "Automatically schedule and publish daily job photos to your Google Business Profile with AI-generated descriptions.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0c10",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upload Photo",
+      "short_name": "Upload",
+      "description": "Upload a new job photo",
+      "url": "/upload",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "View Queue",
+      "short_name": "Queue",
+      "description": "View scheduled posts",
+      "url": "/queue",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

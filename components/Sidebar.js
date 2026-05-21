@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 const NAV = [
   { href: '/', icon: '📊', label: 'Dashboard' },
@@ -16,7 +17,9 @@ export default function Sidebar({ schedulerActive = true }) {
     <aside className="sidebar">
       <div className="sidebar-logo">
         <div className="brand">
-          <div className="brand-icon">🔧</div>
+          <div className="brand-icon" style={{ padding: 0, background: 'transparent', borderRadius: 10, overflow: 'hidden', width: 36, height: 36, flexShrink: 0 }}>
+            <Image src="/icon-192.png" alt="PostCraft Logo" width={36} height={36} style={{ borderRadius: 8 }} priority />
+          </div>
           <div className="brand-text">
             <span className="brand-name">PostCraft</span>
             <span className="brand-sub">GBP Scheduler</span>
