@@ -1125,4 +1125,270 @@ textarea.form-control {
   .queue-table td:nth-child(3) {
     max-width: 120px;
   }
+
+  /* Queue table hidden on mobile — cards shown instead */
+  .queue-table-wrap { display: none; }
+  .queue-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
 }
+
+/* ===========================
+   QUEUE CARDS (Mobile)
+   =========================== */
+.queue-cards {
+  display: none; /* Hidden on desktop, shown on mobile via media query above */
+}
+
+.queue-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: border-color 0.15s;
+}
+
+.queue-card:hover { border-color: var(--border-mid); }
+
+.queue-card-thumb {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+}
+
+.queue-card-body { flex: 1; min-width: 0; }
+
+.queue-card-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.queue-card-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.queue-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ===========================
+   PWA UPDATE BANNER
+   =========================== */
+.pwa-update-banner {
+  position: fixed;
+  bottom: 80px; /* above mobile nav */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  background: var(--bg-card);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(245, 158, 11, 0.08);
+  padding: 16px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 300px;
+  max-width: 420px;
+  animation: slideUpBanner 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pwa-banner-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.pwa-banner-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.pwa-btn-update {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.pwa-btn-update:hover { opacity: 0.88; }
+
+.pwa-btn-later {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border-mid);
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.pwa-btn-later:hover { color: var(--text-secondary); }
+
+@keyframes slideUpBanner {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1);    }
+}
+
+/* ===========================
+   ONBOARDING CARD
+   =========================== */
+.onboarding-card {
+  background: linear-gradient(135deg, var(--accent-muted), var(--bg-elevated));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--radius-xl);
+  padding: 36px 28px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.onboarding-card .onboarding-icon {
+  font-size: 52px;
+  margin-bottom: 14px;
+  display: block;
+}
+
+.onboarding-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.onboarding-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 24px;
+}
+
+.onboarding-steps {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 110px;
+  text-align: center;
+}
+
+.onboarding-step .step-icon { font-size: 28px; }
+
+.onboarding-step .step-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* ===========================
+   SUCCESS OVERLAY
+   =========================== */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fade-in 0.2s ease;
+}
+
+.success-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: slide-up 0.25s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.success-card .success-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.success-card h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.success-card .success-date {
+  font-size: 14px;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.success-card .success-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.success-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .pwa-update-banner {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
+    transform: none;
+    min-width: unset;
+    max-width: unset;
+  }
+
+  .onboarding-steps { gap: 16px; }
+
+  .success-card-actions .btn { flex: 1; justify-content: center; }
+}
+

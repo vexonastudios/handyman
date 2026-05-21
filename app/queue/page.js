@@ -122,6 +122,8 @@ export default function QueuePage() {
               {pending.length > 0 && (
                 <>
                   <div className="section-title">⏳ Scheduled</div>
+
+                  {/* Desktop table */}
                   <div className="queue-table-wrap" style={{ marginBottom: 28 }}>
                     <table className="queue-table">
                       <thead>
@@ -201,6 +203,63 @@ export default function QueuePage() {
                         ))}
                       </tbody>
                     </table>
+                  </div>
+
+                  {/* Mobile cards */}
+                  <div className="queue-cards">
+                    {pending
+                      .sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date))
+                      .map(post => (
+                      <div key={post.id} className="queue-card">
+                        {isVideo(post.image_path) ? (
+                          <video
+                            src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                            className="queue-card-thumb"
+                            muted playsInline
+                          />
+                        ) : (
+                          <img
+                            src={`/api/photo?path=${encodeURIComponent(post.image_path)}`}
+                            alt=""
+                            className="queue-card-thumb"
+                          />
+                        )}
+                        <div className="queue-card-body">
+                          <div className="queue-card-date">
+                            {post.scheduled_date === today ? '🟡 Today' : formatDate(post.scheduled_date)}
+                          </div>
+                          {editingId === post.id ? (
+                            <>
+                              <input
+                                type="date"
+                                className="form-control"
+                                style={{ marginBottom: 8 }}
+                                value={editFields.scheduled_date}
+                                onChange={e => setEditFields(f => ({ ...f, scheduled_date: e.target.value }))}
+                              />
+                              <textarea
+                                className="form-control"
+                                style={{ minHeight: 80, fontSize: 13, marginBottom: 8 }}
+                                value={editFields.description}
+                                onChange={e => setEditFields(f => ({ ...f, description: e.target.value }))}
+                              />
+                              <div className="queue-card-actions">
+                                <button className="btn btn-success btn-sm" onClick={() => saveEdit(post.id)}>✓ Save</button>
+                                <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>Cancel</button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="queue-card-desc">{post.description}</div>
+                              <div className="queue-card-actions">
+                                <button className="btn btn-secondary btn-sm" onClick={() => startEdit(post)}>✏️ Edit</button>
+                                <button className="btn btn-danger btn-sm" onClick={() => setDeleteConfirm(post.id)}>🗑 Remove</button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </>
               )}

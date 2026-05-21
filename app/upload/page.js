@@ -1,19 +1,23 @@
 'use client';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
 
 export default function UploadPage() {
   const router = useRouter();
   const fileInputRef = useRef(null);
 
-  const [photo, setPhoto] = useState(null); // { file, previewUrl, imagePath, base64, mimeType }
+  const [photo, setPhoto] = useState(null);
   const [description, setDescription] = useState('');
   const [dragOver, setDragOver] = useState(false);
-  const [step, setStep] = useState('upload'); // upload | describe | queue
+  const [step, setStep] = useState('upload');
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
   const [alert, setAlert] = useState(null);
+  const [successInfo, setSuccessInfo] = useState(null); // { scheduledDate, queueCount }
+
+  const CHAR_LIMIT = 1500;
 
   function handleFileSelect(file) {
     if (!file) return;
@@ -24,9 +28,7 @@ export default function UploadPage() {
     setStep('describe');
   }
 
-  function handleInputChange(e) {
-    handleFileSelect(e.target.files[0]);
-  }
+  function handleInputChange(e) { handleFileSelect(e.target.files[0]); }
 
   function handleDrop(e) {
     e.preventDefault();
@@ -41,7 +43,6 @@ export default function UploadPage() {
     setAlert(null);
 
     try {
-      // Step 1: Upload — server saves to /tmp and returns base64 inline
       const formData = new FormData();
       formData.append('photo', photo.file);
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
@@ -51,7 +52,6 @@ export default function UploadPage() {
       const { imagePath, base64, mimeType } = uploadData;
       setPhoto(prev => ({ ...prev, imagePath, base64, mimeType }));
 
-      // Step 2: Describe with Gemini — pass base64 directly (no filesystem re-read)
       setLoadingMsg('Asking Gemini to describe your photo...');
       const descRes = await fetch('/api/describe', {
         method: 'POST',
@@ -71,7 +71,6 @@ export default function UploadPage() {
     }
   }
 
-
   async function addToQueue() {
     if (!photo?.imagePath || !description.trim()) return;
     setLoading(true);
@@ -86,9 +85,7 @@ export default function UploadPage() {
       });
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
-
-      setAlert({ type: 'success', message: `✅ Post scheduled for ${formatDate(data.post.scheduled_date)}!` });
-      setTimeout(() => router.push('/queue'), 1800);
+      setSuccessInfo({ scheduledDate: data.post.scheduled_date });
     } catch (err) {
       setAlert({ type: 'error', message: err.message });
     } finally {
@@ -102,6 +99,7 @@ export default function UploadPage() {
     setDescription('');
     setStep('upload');
     setAlert(null);
+    setSuccessInfo(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
@@ -110,6 +108,10 @@ export default function UploadPage() {
     const d = new Date(dateStr + 'T12:00:00Z');
     return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   }
+
+  // Character count color
+  const charCount = description.length;
+  const charColor = charCount >= 1450 ? 'var(--danger)' : charCount >= 1200 ? 'var(--warning)' : 'var(--text-muted)';
 
   return (
     <div className="app-shell">
@@ -123,7 +125,16 @@ export default function UploadPage() {
         <div className="page-body" style={{ maxWidth: 640 }}>
           {alert && (
             <div className={`alert alert-${alert.type}`}>
-              {alert.message}
+              <span>{alert.message}</span>
+              {alert.type === 'error' && step === 'describe' && (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={uploadAndDescribe}
+                  style={{ marginLeft: 'auto', flexShrink: 0 }}
+                >
+                  🔄 Try Again
+                </button>
+              )}
             </div>
           )}
 
@@ -150,7 +161,7 @@ export default function UploadPage() {
             </div>
           )}
 
-          {/* Step: Photo/Video selected — describe */}
+          {/* Step: Photo selected */}
           {(step === 'describe' || step === 'queue') && photo && (
             <>
               <div className="photo-preview" style={{ marginBottom: '20px', position: 'relative' }}>
@@ -175,7 +186,7 @@ export default function UploadPage() {
                       <p>{loadingMsg}</p>
                     </div>
                   ) : (
-                    <button className="btn btn-primary btn-lg" onClick={uploadAndDescribe}>
+                    <button className="btn btn-primary btn-lg" onClick={uploadAndDescribe} style={{ width: '100%' }}>
                       ✨ Generate Description with Gemini
                     </button>
                   )}
@@ -191,12 +202,18 @@ export default function UploadPage() {
                       className="form-control"
                       value={description}
                       onChange={e => setDescription(e.target.value)}
-                      rows={5}
+                      rows={6}
                       placeholder="Gemini-generated description will appear here..."
+                      maxLength={CHAR_LIMIT}
+                      style={{ minHeight: 120 }}
                     />
-                    <span style={{ fontSize: '11.5px', color: 'var(--text-muted)' }}>
-                      {description.length} / 1500 characters
-                    </span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '11.5px', color: charColor, fontWeight: charCount >= 1200 ? 700 : 400, transition: 'color 0.2s' }}>
+                        {charCount} / {CHAR_LIMIT} characters
+                        {charCount >= 1450 && ' — Almost at limit!'}
+                        {charCount >= 1200 && charCount < 1450 && ' — Getting close'}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="cta-container" style={{ display: 'flex', gap: '10px' }}>
@@ -217,6 +234,24 @@ export default function UploadPage() {
           )}
         </div>
       </div>
+
+      {/* ── Success Overlay ── */}
+      {successInfo && (
+        <div className="success-overlay">
+          <div className="success-card">
+            <span className="success-icon">🎉</span>
+            <h2>Post Scheduled!</h2>
+            <p className="success-date">{formatDate(successInfo.scheduledDate)}</p>
+            <p className="success-sub">
+              Your photo has been added to the queue and will be published automatically on that date.
+            </p>
+            <div className="success-card-actions">
+              <Link href="/queue" className="btn btn-primary">📅 View Queue</Link>
+              <button className="btn btn-secondary" onClick={reset}>📷 Upload Another</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -73,8 +73,14 @@ async function handlePublish(request) {
 }
 
 function verifySecret(request) {
-  const expectedSecret = process.env.SCHEDULER_SECRET || 'handyman-scheduler';
-  const cronSecret = process.env.CRON_SECRET;
+  const expectedSecret = process.env.SCHEDULER_SECRET;
+
+  // Reject immediately if the secret is not configured — never fall back to a default.
+  // This prevents anyone who reads the public GitHub repo from triggering publishes.
+  if (!expectedSecret) {
+    console.error('[Publish] SCHEDULER_SECRET environment variable is not set. Rejecting request.');
+    return false;
+  }
 
   const schedulerHeader = request.headers.get('x-scheduler-secret');
   if (schedulerHeader === expectedSecret) return true;
@@ -82,6 +88,7 @@ function verifySecret(request) {
   const authHeader = request.headers.get('authorization');
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '');
+    const cronSecret = process.env.CRON_SECRET;
     if (token === expectedSecret || (cronSecret && token === cronSecret)) return true;
   }
 
