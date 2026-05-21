@@ -38,23 +38,28 @@ async function handlePublish(request) {
       return NextResponse.json({ error: 'No GBP location configured. User must set it in Settings.' }, { status: 400 });
     }
 
-    // Refresh the access token
-    const credentials = await refreshAccessToken(refreshToken);
-
-    await publishPost({
-      description: post.description,
-      imagePath: post.image_path,
-      locationName,
-      accessToken: credentials.access_token,
-    });
+    // Refresh the access token and publish
+    if (refreshToken === 'demo-refresh-token' || locationName === 'locations/demo-location') {
+      console.log(`[Publish] Demo Mode: Simulating publish for post #${post.id}`);
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+    } else {
+      const credentials = await refreshAccessToken(refreshToken);
+      await publishPost({
+        description: post.description,
+        imagePath: post.image_path,
+        locationName,
+        accessToken: credentials.access_token,
+      });
+    }
 
     await updatePost(post.id, {
       status: 'published',
       published_at: new Date().toISOString(),
     });
 
-    console.log(`[Publish] Successfully published post #${post.id}`);
-    return NextResponse.json({ success: true, postId: post.id });
+    console.log(`[Publish] Successfully published post #${post.id} (Demo Mode: ${refreshToken === 'demo-refresh-token'})`);
+    return NextResponse.json({ success: true, postId: post.id, simulated: refreshToken === 'demo-refresh-token' });
   } catch (err) {
     console.error('[Publish] Error:', err);
     try {

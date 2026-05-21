@@ -14,6 +14,18 @@ export async function GET(request) {
   }
 
   try {
+    if (token === 'demo-access-token') {
+      if (accountName) {
+        return NextResponse.json({
+          locations: [{ name: 'locations/demo-location', title: 'Demo Handyman Business (gccsatx.com)' }]
+        });
+      } else {
+        return NextResponse.json({
+          accounts: [{ name: 'accounts/demo-account', accountName: 'Demo Account' }]
+        });
+      }
+    }
+
     if (accountName) {
       const locations = await listLocations(accountName, token);
       return NextResponse.json({ locations });

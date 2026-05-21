@@ -156,6 +156,39 @@ function SettingsContent() {
     setAlert({ type: 'info', message: 'Google account disconnected from this device.' });
   }
 
+  async function enableDemoMode() {
+    setSavingToken(true);
+    try {
+      localStorage.setItem(LS.GOOGLE_ACCESS_TOKEN, 'demo-access-token');
+      localStorage.setItem(LS.GOOGLE_REFRESH_TOKEN, 'demo-refresh-token');
+      localStorage.setItem(LS.GOOGLE_TOKEN_EXPIRY, String(Date.now() + 3600 * 1000));
+      localStorage.setItem(LS.GBP_ACCOUNT, 'accounts/demo-account');
+      localStorage.setItem(LS.GBP_LOCATION, 'locations/demo-location');
+      
+      setGoogleConnected(true);
+      setSelectedAccount('accounts/demo-account');
+      setSelectedLocation('locations/demo-location');
+      setSavedLocation('locations/demo-location');
+
+      await fetch('/api/auth/save-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          refreshToken: 'demo-refresh-token',
+          accessToken: 'demo-access-token',
+          expiryDate: Date.now() + 3600 * 1000,
+          locationName: 'locations/demo-location',
+        }),
+      });
+
+      setAlert({ type: 'success', message: '🧪 Demo Mode enabled! Simulated Google Business Profile is active. You can now test uploading and daily scheduling.' });
+    } catch (e) {
+      setAlert({ type: 'error', message: 'Failed to enable Demo Mode: ' + e.message });
+    } finally {
+      setSavingToken(false);
+    }
+  }
+
   async function fetchAccounts() {
     setLoadingAccounts(true);
     try {
@@ -273,6 +306,29 @@ function SettingsContent() {
                 Waiting for admin to complete OAuth setup.
               </p>
             )}
+
+            <div style={{
+              background: 'rgba(245,158,11,0.06)',
+              border: '1px dashed rgba(245,158,11,0.25)',
+              borderRadius: 'var(--radius-md)',
+              padding: '18px 20px',
+              marginTop: 24,
+            }}>
+              <h4 style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--accent)', margin: '0 0 6px 0' }}>
+                🧪 Test the App Instantly (Demo/Mock Mode)
+              </h4>
+              <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', lineHeight: 1.55, margin: '0 0 14px 0' }}>
+                Waiting for Google API approval? Bypass the connection block and activate a mock Google Business Profile integration to test the scheduling flow.
+              </p>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={enableDemoMode}
+                id="enable-demo-btn"
+                style={{ background: 'rgba(245,158,11,0.15)', color: 'var(--accent)', borderColor: 'rgba(245,158,11,0.3)' }}
+              >
+                🚀 Enable Demo Mode
+              </button>
+            </div>
           </>
         ) : (
           <>
@@ -358,9 +414,11 @@ function SettingsContent() {
 
               {savedLocation && (
                 <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <StatusBadge connected={true} label="Location Saved" />
+                  <StatusBadge connected={true} label={savedLocation === 'locations/demo-location' ? 'Demo Mode Active' : 'Location Saved'} />
                   <span style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>
-                    Posting to: <strong style={{ color: 'var(--text-secondary)' }}>{savedLocation.split('/').pop()}</strong>
+                    Posting to: <strong style={{ color: 'var(--text-secondary)' }}>
+                      {savedLocation === 'locations/demo-location' ? 'Demo Handyman Business (gccsatx.com)' : savedLocation.split('/').pop()}
+                    </strong>
                   </span>
                 </div>
               )}
